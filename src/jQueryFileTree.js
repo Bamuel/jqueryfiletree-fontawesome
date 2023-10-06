@@ -59,6 +59,9 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       _this = this;
       callback = this.callback;
       _this.data = {};
+      if ($ev.is('i')) {
+          $ev = $ev.parent('a');
+      }
       _this.data.li = $ev.closest('li');
       _this.data.type = (ref = _this.data.li.hasClass('directory')) != null ? ref : {
         'directory': 'file'
@@ -77,8 +80,10 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
               easing: options.collapseEasing
             });
             $ev.parent().parent().find('LI.directory').removeClass('expanded').addClass('collapsed');
+              $ev.parent().parent().find('I.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder');
           }
           $ev.parent().removeClass('collapsed').addClass('expanded');
+          $ev.parent().find('I.fa-folder').removeClass('fa-folder').addClass('fa-folder-open');
           $ev.parent().find('UL').remove();
           return _this.showTree($ev.parent(), $ev.attr('rel'), function() {
             _this._trigger('filetreeexpanded', _this.data);
@@ -92,6 +97,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
               return _this._trigger('filetreecollapse', _this.data);
             },
             complete: function() {
+              $ev.parent().find('I.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder');
               $ev.parent().removeClass('expanded').addClass('collapsed');
               _this._trigger('filetreecollapsed', _this.data);
               return callback != null;

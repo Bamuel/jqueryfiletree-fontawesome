@@ -1,31 +1,6 @@
 <?php
 if( !array_key_exists('HTTP_REFERER', $_SERVER) ) exit('No direct script access allowed');
 
-/**
- * jQuery File Tree PHP Connector
- *
- * Version 1.1.0
- *
- * @author - Cory S.N. LaViska A Beautiful Site (http://abeautifulsite.net/)
- * @author - Dave Rogers - https://github.com/daverogers/jQueryFileTree
- *
- * History:
- *
- * 1.1.1 - SECURITY: forcing root to prevent users from determining system's file structure (per DaveBrad)
- * 1.1.0 - adding multiSelect (checkbox) support (08/22/2014)
- * 1.0.2 - fixes undefined 'dir' error - by itsyash (06/09/2014)
- * 1.0.1 - updated to work with foreign characters in directory/file names (12 April 2008)
- * 1.0.0 - released (24 March 2008)
- *
- * Output a list of files for jQuery File Tree
- */
-
-/**
- * filesystem root - USER needs to set this!
- * -> prevents debug users from exploring system's directory structure
- * ex: $root = $_SERVER['DOCUMENT_ROOT'];
- */
-//$root = null;
 $root = $_SERVER['DOCUMENT_ROOT'];
 if( !$root ) exit("ERROR: Root filesystem directory not set in jqueryFileTree.php");
 
@@ -53,10 +28,70 @@ if( file_exists($postDir) ) {
 			$ext		= preg_replace('/^.*\./', '', $file);
 
 			if( file_exists($postDir . $file) && $file != '.' && $file != '..' ) {
-				if( is_dir($postDir . $file) && (!$onlyFiles || $onlyFolders) )
-					echo "<li class='directory collapsed'>{$checkbox}<a rel='" .$htmlRel. "/'>" . $htmlName . "</a></li>";
-				else if (!$onlyFolders || $onlyFiles)
-					echo "<li class='file ext_{$ext}'>{$checkbox}<a rel='" . $htmlRel . "'>" . $htmlName . "</a></li>";
+				if( is_dir($postDir . $file) && (!$onlyFiles || $onlyFolders) ){
+					echo "<li class=\"directory collapsed\">
+                        <a rel=\"" . htmlentities($_POST['dir'] . $file) . "/\">
+                        <i class=\"fa-xl fa-regular fa-folder\"></i>
+                         " . htmlentities($file) . "
+                         </a>
+                      </li>";
+				}
+				else if (!$onlyFolders || $onlyFiles){
+					$documentExtensions = ['doc', 'dot', 'dotx', 'wbk', 'docx', 'docm', 'docb', 'wll', 'wwl'];
+					$excelExtensions = ['xls', 'xlt', 'xlm', 'xll_', 'xla_', 'xla5', 'xla8', 'xlsx', 'xlsm', 'xltx', 'xltm', 'xlsb', 'xla', 'xlam', 'xlam', 'xll', 'xlw'];
+					$powerpointExtensions = ['ppt', 'pot', 'pps', 'ppa', 'ppam', 'pptx', 'pptm', 'potx', 'potm', 'ppsx', 'sldx', 'pa', 'sldm', 'pa'];
+					$videoExtensions = ['mp4', 'mov', 'avi', 'wmv', 'mkv'];
+					$imageExtensions = ['jpg', 'png', 'gif', 'webp', 'tiff', 'psd', 'raw', 'bmp', 'heif', 'indd', 'svg', 'ai', 'eps','tif'];
+					$zipExtensions = ['zip', 'rar', 'tar', 'gz', '7z'];
+					$audioExtensions = ['mp3', 'wav', 'aiff', 'falc', 'aac', 'ogg','m4a'];
+					$codeExtensions = ['php', 'html', 'css', 'js', 'py', 'ini','xml'];
+					$emailmsgExtensions = ['msg'];
+					$txtExtensions = ['txt'];
+
+					if (in_array($ext, array('pdf'))) {
+						$ext = 'fa-regular fa-file-pdf';
+					}
+					elseif (in_array($ext, $documentExtensions)) {
+						$ext = 'fa-regular fa-file-word';
+					}
+					elseif (in_array($ext, $excelExtensions)) {
+						$ext = 'fa-regular fa-file-excel';
+					}
+					elseif (in_array($ext, $powerpointExtensions)) {
+						$ext = 'fa-regular fa-file-powerpoint';
+					}
+					elseif (in_array($ext, $videoExtensions)) {
+						$ext = 'fa-regular fa-file-video';
+					}
+					elseif (in_array($ext, array('db'))) {
+						$ext = 'fa-solid fa-database';
+					}
+					elseif (in_array($ext, $imageExtensions)) {
+						$ext = 'fa-regular fa-file-image';
+					}
+					elseif (in_array($ext, $zipExtensions)) {
+						$ext = 'fa-regular fa-file-zipper';
+					}
+					elseif (in_array($ext, array('csv'))) {
+						$ext = 'fa-solid fa-file-csv';
+					}
+					elseif (in_array($ext, $codeExtensions)) {
+						$ext = 'fa-regular fa-file-code';
+					}
+					elseif (in_array($ext, $txtExtensions)) {
+						$ext = 'fa-regular fa-file-lines';
+					}
+					elseif (in_array($ext, $audioExtensions)) {
+						$ext = 'fa-regular fa-file-audio';
+					}
+					elseif (in_array($ext, $emailmsgExtensions)) {
+						$ext = 'fa-regular fa-envelope';
+					}
+					else {
+						$ext = 'fa-regular fa-file';
+					}
+					echo "<li><a rel='" . $htmlRel . "'><i class=\"fa-fw fa-xl $ext\"></i>  " . $htmlName . "</a></li>";
+				}
 			}
 		}
 
